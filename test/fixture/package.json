@@ -1,0 +1,14 @@
+{
+	"name": "jev-fixture",
+	"private": true,
+	"version": "0.0.0",
+	"dependencies": {
+		"@rbxts/jev": "file:../../rbxts-jev-0.1.0.tgz"
+	},
+	"devDependencies": {
+		"@rbxts/compiler-types": "^3.0.0-types.0",
+		"@rbxts/types": "^1.0.958",
+		"roblox-ts": "^3.0.0",
+		"typescript": "5.9.3"
+	}
+}

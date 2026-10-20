@@ -1,0 +1,14 @@
+node_modules
+out
+include
+*.log
+*.tgz
+.DS_Store
+.env
+test/fixture/node_modules
+test/fixture/out
+test/fixture/include
+test/fixture/package-lock.json
+test/fixture/*.rbxl
+.idea
+.test-place.rbxl
