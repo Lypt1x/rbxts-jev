@@ -93,7 +93,7 @@ for (const file of frames) {
 		const ownsFrame = /\bjev\.ask\(/.test(body) && /\bconst\s*\{\s*answers\s*\}/.test(body);
 		if (defines || ownsFrame) { skipped.push(`${file} block ${n}`); continue; }
 
-		const askLine = declares("answers") ? "" : "const state = { player: { name: player.Name }, message };\nconst { answers } = await jev.ask(state, npc);";
+		const askLine = declares("answers") ? "" : "const state = { message };\nconst { answers } = await jev.ask(state, npc);";
 		const unused = [...gameNames, "answers"].filter((x) => x !== "answers" || askLine).join(", ");
 		write(
 			`src/server/snippet${n}.ts`,

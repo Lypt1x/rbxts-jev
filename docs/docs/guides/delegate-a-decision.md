@@ -20,7 +20,7 @@ import { respondToThreat, saveIntent } from "./game";
 import { npc } from "shared/questions";
 
 async function handleChat(player: Player, message: string) {
-	const state = { player: { name: player.Name }, message };
+	const state = { message };
 	const { answers } = await jev.ask(state, npc);
 	// The snippets in this guide go here.
 }

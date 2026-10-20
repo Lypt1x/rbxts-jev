@@ -76,18 +76,21 @@ In a real game these come from the event that starts the conversation.
 | - | - | - |
 | `player` | `Player` | The player who sent the message, such as the first argument of a remote's `OnServerEvent` |
 | `message` | `string` | What that player typed |
-| `state` | `{ player: { name: string }, message: string }` | Built from the two above, as shown next |
+| `state` | `{ message: string }` | The content to judge, built from `message` as shown next |
 
 ```ts title="src/server/chat.ts"
 import { jev } from "./jev";
 import { npc } from "shared/questions";
 
 export async function handleChat(player: Player, message: string) {
-	const state = { player: { name: player.Name }, message };
+	const state = { message };
 	const { answers } = await jev.ask(state, npc);
 	return answers;
 }
 ```
+
+`player` is not part of the state, because no question asks about the player. Add a field to the
+state only when a question needs it.
 
 `answers` is the result of one request. Its type follows from `npc`, so
 `answers.intent.choice` is `"help" | "insult" | "trade"`.

@@ -25,15 +25,12 @@ to judge. It can be a string, an object, or an array. The questions run in paral
 is judged on its own, so adding a question barely changes the response time.
 
 Because extra questions are close to free, the best pattern is to ask everything you might need and
-ignore what does not apply. A chat message can be classified for intent, mood, threat, and personal
-information in a single request. Your code then decides which answers matter.
+ignore what does not apply. A chat message can be classified for intent, mood, and threat in a single
+request. Your code then decides which answers matter.
 
 ```ts
 // `jev` and `npc` come from Shared setup.
-const state = {
-	npc: { name: "Mira" },
-	message: "Give me a discount or else.",
-};
+const state = { message: "Give me a discount or else." };
 const { answers } = await jev.ask(state, npc);
 ```
 
