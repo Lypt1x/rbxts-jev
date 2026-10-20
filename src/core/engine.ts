@@ -189,6 +189,7 @@ export function createEngine(config: EngineConfig): JevEngine {
 
 			emit({ type: "request", setName, attempt });
 			requests += 1;
+			const sentAt = config.clock.now();
 			try {
 				response = await withTimeout(config.transport.request(request), timeoutMs, config.clock);
 			} catch (caught) {
@@ -198,6 +199,8 @@ export function createEngine(config: EngineConfig): JevEngine {
 			}
 
 			if (response !== undefined) {
+				const elapsed = config.clock.now() - sentAt;
+				emit({ type: "response", setName, status: response.status, latencyMs: elapsed - (elapsed % 1) });
 				if (response.status >= 200 && response.status < 300) {
 					return response.body;
 				}

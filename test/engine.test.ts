@@ -144,6 +144,19 @@ describe("engine", () => {
 		expect(engine.stats().cacheHits).toBe(1);
 	});
 
+	test("emits request, response, retry, and error events in order", async () => {
+		const events: Array<string> = [];
+		const transport = new FakeTransport(response(500), response(401));
+		const engine = createEngine(
+			makeConfig(transport, {
+				retries: 1,
+				onEvent: (event) => events.push(event.type === "response" ? `response:${event.status}` : event.type),
+			}),
+		);
+		await expect(engine.ask("hi", set)).rejects.toMatchObject({ kind: "auth" });
+		expect(events).toEqual(["request", "response:500", "retry", "request", "response:401", "error"]);
+	});
+
 	test("does not cache by default", async () => {
 		const transport = new FakeTransport(response(), response());
 		const engine = createEngine(makeConfig(transport));
