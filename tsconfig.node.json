@@ -17,5 +17,8 @@
 	"include": [
 		"src/core",
 		"test"
+	],
+	"exclude": [
+		"test/fixture"
 	]
 }
