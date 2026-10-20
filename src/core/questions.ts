@@ -4,6 +4,7 @@ import type { JsonArray, JsonObject, JsonValue } from "./json";
 /** Content accepted by `instructions` and by criteria descriptions. */
 export type Entry = string | JsonArray | JsonObject;
 
+/** A question that selects one of a fixed set of options. */
 export interface ChoiceQuestion<O extends string = string> {
 	readonly type: "choice";
 	readonly instructions: Entry;
@@ -13,6 +14,7 @@ export interface ChoiceQuestion<O extends string = string> {
 	readonly options: ReadonlyArray<O>;
 }
 
+/** A question that rates the state against ordered levels. */
 export interface ScoreQuestion<L extends Entry = Entry> {
 	readonly type: "score";
 	readonly instructions: Entry;
@@ -20,33 +22,41 @@ export interface ScoreQuestion<L extends Entry = Entry> {
 	readonly criteria: ReadonlyArray<L>;
 }
 
+/** Optional descriptions of what a yes and a no mean. */
 export interface NoulCriteria {
 	readonly true?: Entry;
 	readonly false?: Entry;
 }
 
+/** A yes/no question answered with a probability. */
 export interface NoulQuestion {
 	readonly type: "noul";
 	readonly instructions: Entry;
 	readonly criteria?: NoulCriteria;
 }
 
+/** A question that locates something in an image. */
 export interface BoxQuestion {
 	readonly type: "box";
 	readonly instructions: Entry;
 }
 
+/** Any question type. */
 export type AnyQuestion = ChoiceQuestion | ScoreQuestion | NoulQuestion | BoxQuestion;
 
+/** Question ids mapped to their questions. */
 export type QuestionMap = { readonly [key: string]: AnyQuestion };
 
+/** A named group of questions that is asked together in one request. Create one with `questions`. */
 export interface QuestionSet<Q extends QuestionMap = QuestionMap, N extends string = string> {
 	readonly name: N;
 	readonly ids: ReadonlyArray<Extract<keyof Q, string>>;
 	readonly questions: Q;
 }
 
+/** The most options a Choice question may have. */
 export const MAX_CHOICES = 255;
+/** The most levels a Score question may have. */
 export const MAX_LEVELS = 10;
 
 function invalidDefinition(message: string): never {
@@ -102,6 +112,7 @@ function assertQuestion(id: string, question: AnyQuestion): void {
 	}
 }
 
+/** Throws an `invalid_definition` error when a set breaks the API limits. */
 export function assertDefinition(name: string, ids: ReadonlyArray<string>, questions: QuestionMap): void {
 	if (name === "") {
 		invalidDefinition("a question set needs a non-empty name");
@@ -159,6 +170,7 @@ export function oneOf<O extends readonly string[]>(
 	return question;
 }
 
+/** A Score question. Levels are ordered, and the position of a level is its score. */
 export function score<L extends readonly Entry[]>(
 	instructions: Entry,
 	...levels: L
@@ -183,6 +195,7 @@ export function box(instructions: Entry): BoxQuestion {
 	return question;
 }
 
+/** Groups questions into a set. Pass a name first to label the set in previews and remote calls. */
 export function questions<Q extends QuestionMap>(set: Q): QuestionSet<Q, "anonymous">;
 export function questions<N extends string, Q extends QuestionMap>(name: N, set: Q): QuestionSet<Q, N>;
 export function questions(a: unknown, b?: unknown): QuestionSet<QuestionMap, string> {
@@ -199,12 +212,14 @@ export function questions(a: unknown, b?: unknown): QuestionSet<QuestionMap, str
 	return set;
 }
 
+/** A one-line description of a question: its id, type, and answer shape. */
 export interface QuestionSummary {
 	readonly id: string;
 	readonly type: AnyQuestion["type"];
 	readonly detail: string;
 }
 
+/** A runtime description of a question set. */
 export interface DefinitionSummary {
 	readonly name: string;
 	readonly questions: ReadonlyArray<QuestionSummary>;
@@ -251,6 +266,7 @@ export function describeQuestionSet<Q extends QuestionMap>(set: QuestionSet<Q>):
 	return { name: set.name, questions: summaries };
 }
 
+/** Formats a summary as the text block that `preview` prints. */
 export function formatDefinition(summary: DefinitionSummary): string {
 	const lines = new Array<string>();
 	lines.push(summary.name);
@@ -260,6 +276,7 @@ export function formatDefinition(summary: DefinitionSummary): string {
 	return lines.join("\n");
 }
 
+/** Describes and formats a question set in one step. */
 export function formatQuestionSet<Q extends QuestionMap>(set: QuestionSet<Q>): string {
 	return formatDefinition(describeQuestionSet(set));
 }
@@ -279,6 +296,7 @@ function wireChoice(question: ChoiceQuestion): JsonObject {
 	return wire;
 }
 
+/** Converts one question to the JSON shape the API expects. */
 export function toWireQuestion(question: AnyQuestion): JsonObject {
 	if (question.type === "choice") {
 		return wireChoice(question);
@@ -297,6 +315,7 @@ export function toWireQuestion(question: AnyQuestion): JsonObject {
 	return wire;
 }
 
+/** Converts a whole set to the JSON shape the API expects. */
 export function toWireQuestions<Q extends QuestionMap>(set: QuestionSet<Q>): JsonObject {
 	const wire: { [key: string]: JsonValue } = {};
 	for (const id of set.ids) {
@@ -308,6 +327,7 @@ export function toWireQuestions<Q extends QuestionMap>(set: QuestionSet<Q>): Jso
 	return wire;
 }
 
+/** Whether the set contains a Box question, which needs the images header. */
 export function questionSetNeedsImages<Q extends QuestionMap>(set: QuestionSet<Q>): boolean {
 	for (const id of set.ids) {
 		const question = set.questions[id];

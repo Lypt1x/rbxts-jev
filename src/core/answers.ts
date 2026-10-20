@@ -3,6 +3,7 @@ import { JevError } from "./errors";
 import type { Entry, QuestionMap, QuestionSet, ScoreQuestion } from "./questions";
 import { err, ok, type Result } from "./result";
 
+/** The answer to a Choice question. `choice` is one of the option names you defined. */
 export interface ChoiceAnswer<O extends string = string> {
 	readonly type: "choice";
 	readonly choice: O;
@@ -10,6 +11,7 @@ export interface ChoiceAnswer<O extends string = string> {
 	readonly probabilities: { readonly [K in O]: number };
 }
 
+/** The answer to a Score question. `legend` maps each level index to the level you wrote. */
 export interface ScoreAnswer<L extends Entry = Entry> {
 	readonly type: "score";
 	/** Probability-weighted position along the levels. May fall between levels. */
@@ -19,12 +21,14 @@ export interface ScoreAnswer<L extends Entry = Entry> {
 	readonly probabilities: { readonly [key: string]: number };
 }
 
+/** The answer to a Noul question. It has no `confidence`; the probability already carries it. */
 export interface NoulAnswer {
 	readonly type: "noul";
 	/** Probability that the answer is yes, from 0 to 1. */
 	readonly noul: number;
 }
 
+/** Box edges as fractions of the image, from 0 to 1, measured from the top left. */
 export interface BoxCoordinates {
 	readonly top: number;
 	readonly bottom: number;
@@ -32,6 +36,7 @@ export interface BoxCoordinates {
 	readonly right: number;
 }
 
+/** The answer to a Box question. */
 export interface BoxAnswer {
 	readonly type: "box";
 	readonly box: BoxCoordinates;
@@ -39,8 +44,10 @@ export interface BoxAnswer {
 	readonly confidence: number | undefined;
 }
 
+/** Any answer the model can return. */
 export type AnyAnswer = ChoiceAnswer | ScoreAnswer | NoulAnswer | BoxAnswer;
 
+/** The answer type for one question, inferred from how the question was defined. */
 export type AnswerOf<Q> = Q extends { readonly type: "choice"; readonly options: ReadonlyArray<infer O extends string> }
 	? ChoiceAnswer<O>
 	: Q extends ScoreQuestion<infer L>
@@ -51,13 +58,16 @@ export type AnswerOf<Q> = Q extends { readonly type: "choice"; readonly options:
 				? BoxAnswer
 				: never;
 
+/** The answer map for a whole question map. Use `AnswersOf<typeof set["questions"]>` to name it. */
 export type AnswersOf<Q extends QuestionMap> = { readonly [K in keyof Q]: AnswerOf<Q[K]> };
 
+/** Token counts for one request. You pay for input tokens; output tokens are free. */
 export interface Usage {
 	readonly input_tokens: number;
 	readonly output_tokens: number;
 }
 
+/** The result of a successful `ask`. */
 export interface AskResult<Q extends QuestionMap> {
 	readonly answers: AnswersOf<Q>;
 	readonly model: string;
@@ -295,12 +305,14 @@ function parseUsage(raw: unknown): Usage {
 	return { input_tokens: input === undefined ? 0 : input, output_tokens: output === undefined ? 0 : output };
 }
 
+/** A validated response envelope, before timing and cache details are added. */
 export interface ParsedResponse<Q extends QuestionMap> {
 	readonly answers: AnswersOf<Q>;
 	readonly model: string;
 	readonly usage: Usage;
 }
 
+/** Validates a full System One response against the question set that produced it. */
 export function parseSystemOneResponse<Q extends QuestionMap>(
 	raw: unknown,
 	set: QuestionSet<Q>,

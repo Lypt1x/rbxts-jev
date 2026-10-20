@@ -10,6 +10,7 @@ import { err, ok, type Result } from "./result";
 import { createRateLimiter, createSemaphore, type Clock } from "./scheduler";
 import type { HttpTransport, JsonCodec } from "./transport";
 
+/** Per-call overrides for `ask`. */
 export interface AskOptions {
 	/** Overrides the client's default model for this call. An alias moves between
 	 * releases, so pin a version when thresholds are tuned. */
@@ -20,6 +21,7 @@ export interface AskOptions {
 	readonly assets?: JsonObject;
 }
 
+/** Events passed to the `onEvent` listener. A listener that throws is caught and logged. */
 export type JevEvent =
 	| { readonly type: "request"; readonly setName: string; readonly attempt: number }
 	| { readonly type: "response"; readonly setName: string; readonly status: number; readonly latencyMs: number }
@@ -27,6 +29,7 @@ export type JevEvent =
 	| { readonly type: "cache_hit"; readonly setName: string }
 	| { readonly type: "error"; readonly setName: string; readonly error: JevError };
 
+/** Counters since the client was created. */
 export interface EngineStats {
 	readonly requests: number;
 	readonly retries: number;
@@ -35,6 +38,7 @@ export interface EngineStats {
 	readonly errors: number;
 }
 
+/** Everything the engine needs. Every effect is injected, so tests can run without Roblox. */
 export interface EngineConfig {
 	readonly model: string;
 	readonly baseUrl: string;
@@ -54,6 +58,7 @@ export interface EngineConfig {
 	readonly onEvent?: (event: JevEvent) => void;
 }
 
+/** The platform-independent core behind `createJev`. */
 export interface JevEngine {
 	ask<Q extends QuestionMap>(state: JsonValue, set: QuestionSet<Q>, options?: AskOptions): Promise<AskResult<Q>>;
 	attempt<Q extends QuestionMap>(
@@ -103,6 +108,7 @@ function truncate(text: string): string {
 	return out;
 }
 
+/** Maps an HTTP status to a `JevError`. */
 export function errorForResponse(status: number, body: string, headers: { readonly [key: string]: unknown }): JevError {
 	const retryAfterMs = parseRetryAfter(headers);
 	const detail = truncate(body);
@@ -145,6 +151,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, clock: Clock): P
 	return Promise.race([promise, timeout]);
 }
 
+/** Builds the engine from injected effects. Prefer `createJev` in a game. */
 export function createEngine(config: EngineConfig): JevEngine {
 	const limiter = createRateLimiter(config.requestsPerMinute, config.burst, config.clock);
 	const semaphore = createSemaphore(config.maxConcurrent);

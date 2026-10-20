@@ -3,6 +3,7 @@ import { clamp01, noulConfidence } from "./confidence";
 import { JevError, isJevError, toJevError } from "./errors";
 import { err, ok, type Result } from "./result";
 
+/** What to do with an answer: `act` on it, `confirm` it first, or `reject` it. */
 export type Verdict = "act" | "confirm" | "reject";
 
 /** Thresholds applied to an answer's confidence (Choice, Score, Box) or to its
@@ -13,15 +14,19 @@ export interface Gate {
 	readonly reject: number;
 }
 
+/** An answer together with the verdict the gate gave it. */
 export interface Decision<T> {
 	readonly verdict: Verdict;
 	readonly value: T;
 	readonly confidence: number;
 }
 
+/** Default gate for Choice, Score, and Box answers, applied to confidence. */
 export const DEFAULT_CONFIDENCE_GATE: Gate = { act: 0.8, reject: 0.45 };
+/** Default gate for Noul answers, applied to the probability itself. */
 export const DEFAULT_PROBABILITY_GATE: Gate = { act: 0.7, reject: 0.3 };
 
+/** A Noul answer as a decision value: `yes` at or above 0.5, otherwise `no`. */
 export type NoulValue = "yes" | "no";
 
 function normalizeGate(gate: Gate): Gate {
@@ -40,6 +45,7 @@ function verdictFor(confidence: number, gate: Gate): Verdict {
 	return "confirm";
 }
 
+/** Gates a Choice answer on its confidence. The value is the chosen option. */
 export function decide<O extends string>(answer: ChoiceAnswer<O>, gate?: Gate): Decision<O>;
 /** Turns a Score answer into a decision whose value is the fractional score. */
 export function decide(answer: ScoreAnswer, gate?: Gate): Decision<number>;
@@ -67,6 +73,7 @@ export function decide(answer: AnyAnswer, gate?: Gate): Decision<unknown> {
 	return { verdict: verdictFor(answer.confidence ?? 0, threshold), value: answer.box, confidence: answer.confidence ?? 0 };
 }
 
+/** One handler per verdict. `confirm` is optional and falls back to `reject`. */
 export interface DecisionHandlers<T, R> {
 	readonly act: (value: T, decision: Decision<T>) => R;
 	/** Called when confidence is between the reject and act thresholds. Falls back
@@ -136,6 +143,7 @@ export function unwrapOrThrow<T>(result: Result<T, JevError>): T {
 
 export { toJevError };
 
+/** Options for `routeChoice`. */
 export interface RouteChoiceOptions<O extends string, R> {
 	readonly gate?: Gate;
 	/** Called when the answer is not confident enough to act. When omitted, the

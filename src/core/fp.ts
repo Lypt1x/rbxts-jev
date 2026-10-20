@@ -1,9 +1,12 @@
+/** A function of one argument. */
 export type Unary<A, B> = (value: A) => B;
 
+/** Returns its argument unchanged. */
 export function identity<T>(value: T): T {
 	return value;
 }
 
+/** Passes a value through each function in turn, left to right. Supports up to five steps. */
 export function pipe<A>(value: A): A;
 export function pipe<A, B>(value: A, ab: Unary<A, B>): B;
 export function pipe<A, B, C>(value: A, ab: Unary<A, B>, bc: Unary<B, C>): C;
@@ -31,6 +34,7 @@ export function pipe(value: defined, ...steps: ReadonlyArray<Unary<defined, defi
 	return current;
 }
 
+/** Composes functions left to right into one function. Supports up to four steps. */
 export function flow<A, B>(ab: Unary<A, B>): Unary<A, B>;
 export function flow<A, B, C>(ab: Unary<A, B>, bc: Unary<B, C>): Unary<A, C>;
 export function flow<A, B, C, D>(ab: Unary<A, B>, bc: Unary<B, C>, cd: Unary<C, D>): Unary<A, D>;

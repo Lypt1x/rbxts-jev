@@ -1,3 +1,4 @@
+/** The closed set of failure categories. Switch on `kind` instead of matching message text. */
 export type JevErrorKind =
 	| "auth"
 	| "validation"
@@ -14,6 +15,7 @@ export type JevErrorKind =
 	| "handler"
 	| "unknown";
 
+/** Fields accepted by the `JevError` constructor. */
 export interface JevErrorInit {
 	readonly kind: JevErrorKind;
 	readonly message: string;
@@ -53,6 +55,7 @@ export class JevError {
 	}
 }
 
+/** Whether a value is a `JevError`. Safe to call on anything, including strings and nil. */
 export function isJevError(value: unknown): value is JevError {
 	if (!typeIs(value, "table")) {
 		return false;
@@ -60,6 +63,7 @@ export function isJevError(value: unknown): value is JevError {
 	return (value as { __jevError?: unknown }).__jevError === true;
 }
 
+/** Converts anything thrown or rejected into a `JevError`. A `JevError` passes through unchanged. */
 export function toJevError(value: unknown): JevError {
 	if (isJevError(value)) {
 		return value;
