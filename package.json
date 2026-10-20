@@ -19,7 +19,10 @@
 		"test:studio": "bash scripts/studio-test.sh",
 		"test:cloud": "bash scripts/build-place.sh && node scripts/cloud-test.mjs wire",
 		"test:live": "bash scripts/build-place.sh && node scripts/cloud-test.mjs live",
-		"prepare": "npm run build"
+		"prepare": "npm run build",
+		"docs:build": "npm --prefix docs run build",
+		"docs:start": "npm --prefix docs run start",
+		"docs:check": "node scripts/check-docs.mjs"
 	},
 	"keywords": [
 		"roblox",

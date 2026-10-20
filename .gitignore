@@ -12,3 +12,5 @@ test/fixture/package-lock.json
 test/fixture/*.rbxl
 .idea
 .test-place.rbxl
+.docs-check
+.docs-pack
