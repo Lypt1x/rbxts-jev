@@ -8,7 +8,6 @@ export type JevErrorKind =
 	| "network"
 	| "server"
 	| "malformed_response"
-	| "cancelled"
 	| "http_disabled"
 	| "not_ready"
 	| "undecided"
