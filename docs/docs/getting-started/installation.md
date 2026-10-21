@@ -10,11 +10,10 @@ This page gets the package into a roblox-ts project and the key into a Roblox se
 ## Install the package
 
 ```bash
-npm install github:Lypt1x/rbxts-jev
+npm install @rbxts/jev
 ```
 
-The package is not on npm yet. The repository builds its `out/` folder when npm installs it
-from git.
+The package lives in the `@rbxts` scope, so a project from `npm init roblox-ts` already resolves it.
 
 Your Rojo project needs the standard roblox-ts include tree. A project from
 `npm init roblox-ts` already has it.

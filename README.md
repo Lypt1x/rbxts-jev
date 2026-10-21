@@ -11,11 +11,8 @@ values that your game code branches on.
 ## Install
 
 ```bash
-npm install github:Lypt1x/rbxts-jev
+npm install @rbxts/jev
 ```
-
-The package is not on npm yet. npm builds the `out/` folder when it installs from git. Pin a tag or
-a commit so an update cannot pull a breaking change.
 
 You need a roblox-ts project with the standard `rbxts_include` mapping in `default.project.json`.
 A project from `npm init roblox-ts` has it. There is no transformer to configure and no separate
