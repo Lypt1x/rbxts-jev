@@ -1,6 +1,6 @@
 {
 	"name": "@rbxts/jev",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Typed, functional TypeSafe Jev client for Roblox. Ask many questions about one state, get typed decisions back.",
 	"main": "out/init.luau",
 	"types": "out/index.d.ts",
