@@ -6,7 +6,7 @@ Jev does not write text. You send it one state and several typed questions, and 
 choice, a score, a probability, or a box. This package makes those answers ordinary TypeScript
 values that your game code branches on.
 
-**Documentation:** the guides are in [`docs/`](docs/docs). The site is not published yet; [build it locally](#build-the-docs) to browse it with the generated API reference.
+**Documentation:** [lypt1x.github.io/rbxts-jev](https://lypt1x.github.io/rbxts-jev/) has the guides and the API reference.
 
 ## Install
 
@@ -20,7 +20,7 @@ Promise package, because roblox-ts 3.0 ships the Promise runtime.
 
 Create a Roblox secret named `TYPESAFE_API_KEY` for your key, scoped to `api.typesafe.ai`. In Studio,
 add it under File > Experience Settings > Security > Local Secrets, and turn on Allow HTTP Requests.
-The [installation guide](docs/docs/getting-started/installation.md) covers each step.
+The [installation guide](https://lypt1x.github.io/rbxts-jev/getting-started/installation/) covers each step.
 
 ## A complete example
 
@@ -71,14 +71,14 @@ jev.ask(state, npc)
 
 | Read | For |
 | - | - |
-| [Quick start](docs/docs/getting-started/quick-start.md) | A first request, step by step |
-| [Shared setup](docs/docs/getting-started/shared-setup.md) | Where every example variable comes from |
-| [How it works](docs/docs/concepts/how-it-works.md) | The idea behind decisions and one request, many questions |
-| [Delegate a decision](docs/docs/guides/delegate-a-decision.md) | Acting on an answer safely |
-| [Handle errors](docs/docs/guides/handle-errors.md) | Every error kind and what to do about it |
-| [Ask from clients](docs/docs/guides/ask-from-clients.md) | Letting a `LocalScript` get a decision |
+| [Quick start](https://lypt1x.github.io/rbxts-jev/getting-started/quick-start/) | A first request, step by step |
+| [Shared setup](https://lypt1x.github.io/rbxts-jev/getting-started/shared-setup/) | Where every example variable comes from |
+| [How it works](https://lypt1x.github.io/rbxts-jev/concepts/how-it-works/) | The idea behind decisions and one request, many questions |
+| [Delegate a decision](https://lypt1x.github.io/rbxts-jev/guides/delegate-a-decision/) | Acting on an answer safely |
+| [Handle errors](https://lypt1x.github.io/rbxts-jev/guides/handle-errors/) | Every error kind and what to do about it |
+| [Ask from clients](https://lypt1x.github.io/rbxts-jev/guides/ask-from-clients/) | Letting a `LocalScript` get a decision |
 
-The API reference is generated from the source's doc comments when you build the site.
+The [API reference](https://lypt1x.github.io/rbxts-jev/api/) is generated from the source's doc comments.
 
 ## What it does not do
 
