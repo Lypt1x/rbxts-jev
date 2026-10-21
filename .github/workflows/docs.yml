@@ -1,0 +1,82 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/**
+      - src/**
+      - tsconfig.json
+      - tsconfig.typedoc.json
+      - scripts/check-docs.mjs
+      - package.json
+      - .github/workflows/docs.yml
+  pull_request:
+    paths:
+      - docs/**
+      - src/**
+      - tsconfig.json
+      - tsconfig.typedoc.json
+      - scripts/check-docs.mjs
+      - package.json
+      - .github/workflows/docs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build the site and check the examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            docs/package-lock.json
+
+      # The API reference is generated from ../src, so the root dependencies are needed too.
+      - name: Install the package dependencies
+        run: npm ci
+
+      - name: Install the docs dependencies
+        run: npm ci
+        working-directory: docs
+
+      - name: Compile every TypeScript example in the docs
+        run: npm run docs:check
+
+      - name: Build the site
+        run: npm run docs:build
+
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+        if: github.event_name != 'pull_request'
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        if: github.event_name != 'pull_request'
+        with:
+          path: docs/build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
