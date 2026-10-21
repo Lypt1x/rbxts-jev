@@ -3,7 +3,7 @@
 	"private": true,
 	"version": "0.0.0",
 	"dependencies": {
-		"@rbxts/jev": "file:../../rbxts-jev-0.1.0.tgz"
+		"@rbxts/jev": "*"
 	},
 	"devDependencies": {
 		"@rbxts/compiler-types": "^3.0.0-types.0",

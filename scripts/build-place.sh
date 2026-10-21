@@ -7,11 +7,11 @@ rojo="${ROJO:-rojo}"
 cd "$root"
 npm run build --silent
 rm -f ./*.tgz
-npm pack --silent > /dev/null
+tarball="$(npm pack --silent | tail -n 1)"
 (
 	cd test/fixture
 	rm -rf node_modules/@rbxts/jev package-lock.json
-	npm install --silent
+	npm install --silent --no-save "file:../../$tarball"
 	npx rbxtsc
 	"$rojo" build . -o fixture.rbxl > /dev/null
 )

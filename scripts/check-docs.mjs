@@ -25,19 +25,20 @@ function write(path, code, append = false) {
 }
 
 execFileSync("npm", ["run", "build", "--silent"], { cwd: root, stdio: "inherit" });
-execFileSync("npm", ["pack", "--silent", "--pack-destination", tmpdir()], { cwd: root });
-
-function tmpdir() {
-	const dir = join(work, "..", ".docs-pack");
-	mkdirSync(dir, { recursive: true });
-	return dir;
-}
+const packDir = join(root, ".docs-pack");
+mkdirSync(packDir, { recursive: true });
+// `npm pack --silent` prints the tarball's file name, so the script never hard-codes the version.
+const tarballName = execFileSync("npm", ["pack", "--silent", "--pack-destination", packDir], { cwd: root })
+	.toString()
+	.trim()
+	.split("\n")
+	.pop();
 
 rmSync(work, { recursive: true, force: true });
 cpSync(join(root, "test", "fixture"), work, { recursive: true, filter: (src) => !/node_modules|[\\/]out$|[\\/]include$|\.rbxl$|package-lock/.test(src) });
 rmSync(join(work, "src"), { recursive: true, force: true });
 
-const tarball = join(root, ".docs-pack", "rbxts-jev-0.1.0.tgz");
+const tarball = join(packDir, tarballName);
 if (!existsSync(tarball)) throw new Error(`Package tarball missing at ${tarball}`);
 const pkg = JSON.parse(readFileSync(join(work, "package.json"), "utf8"));
 pkg.dependencies["@rbxts/jev"] = `file:${tarball}`;
